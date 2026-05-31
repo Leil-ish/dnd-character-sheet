@@ -7,15 +7,26 @@ import Attacks from './components/Attacks';
 import Spells from './components/Spells';
 import Notes from './components/Notes';
 import { defaultCharacter } from './utils/defaultCharacter';
+import { signedBonus, getClassResources, getRaceResources, mergeResources } from './utils/calculations';
+import Resources from './components/Resources';
+import Actions from './components/Actions';
 import './App.css';
 
 const STORAGE_KEY = 'dnd-character-sheet';
-const TABS = ['Combat', 'Spells', 'Notes'];
+const TABS = ['Combat', 'Actions', 'Spells', 'Notes'];
 
 function loadCharacter() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) return { ...defaultCharacter, ...JSON.parse(saved) };
+    if (saved) {
+      const data = { ...defaultCharacter, ...JSON.parse(saved) };
+      if (!data.resources || data.resources.length === 0) {
+        const classRes = getClassResources(data.class, data.level, data.abilities, data.subclass);
+        const raceRes = getRaceResources(data.race);
+        data.resources = [...classRes, ...raceRes].map((r) => ({ ...r, current: r.max }));
+      }
+      return data;
+    }
   } catch {}
   return { ...defaultCharacter };
 }
@@ -24,7 +35,10 @@ export default function App() {
   const [character, setCharacter] = useState(loadCharacter);
   const [activeTab, setActiveTab] = useState('Combat');
   const [saveStatus, setSaveStatus] = useState('saved');
+  const [rollResult, setRollResult] = useState(null);
   const saveTimer = useRef(null);
+
+  const handleRoll = (result) => setRollResult(result);
 
   useEffect(() => {
     setSaveStatus('unsaved');
@@ -35,7 +49,15 @@ export default function App() {
     }, 800);
   }, [character]);
 
-  const update = (partial) => setCharacter((prev) => ({ ...prev, ...partial }));
+  const update = (partial) => setCharacter((prev) => {
+    const next = { ...prev, ...partial };
+    if ('class' in partial || 'level' in partial || 'race' in partial || 'subclass' in partial) {
+      const classRes = getClassResources(next.class, next.level, next.abilities, next.subclass);
+      const raceRes = getRaceResources(next.race);
+      next.resources = mergeResources(prev.resources || [], [...classRes, ...raceRes]);
+    }
+    return next;
+  });
 
   const exportJSON = () => {
     const blob = new Blob([JSON.stringify(character, null, 2)], { type: 'application/json' });
@@ -87,8 +109,20 @@ export default function App() {
       <div className="sheet-layout">
         <div className="left-col">
           <Header character={character} onChange={update} />
-          <AbilityScores character={character} onChange={update} />
-          <Skills character={character} onChange={update} />
+          <AbilityScores character={character} onChange={update} onRoll={handleRoll} />
+          <Skills character={character} onChange={update} onRoll={handleRoll} />
+          {rollResult && (
+            <div className={`section roll-result-panel${rollResult.crit ? ' crit' : rollResult.fail ? ' fail' : ''}`}>
+              <div className="roll-panel-label">{rollResult.label}</div>
+              <div className="roll-panel-main">
+                <span className="roll-panel-die">d20: {rollResult.roll}</span>
+                {rollResult.bonus !== 0 && <span className="roll-panel-bonus">{signedBonus(rollResult.bonus)}</span>}
+                <span className="roll-panel-total">{rollResult.total}</span>
+              </div>
+              {rollResult.crit && <span className="crit-label">NATURAL 20!</span>}
+              {rollResult.fail && <span className="fail-label">Natural 1</span>}
+            </div>
+          )}
         </div>
 
         <div className="right-col">
@@ -105,9 +139,11 @@ export default function App() {
             {activeTab === 'Combat' && (
               <>
                 <Combat character={character} onChange={update} />
+                <Resources character={character} onChange={update} />
                 <Attacks character={character} onChange={update} />
               </>
             )}
+            {activeTab === 'Actions' && <Actions character={character} />}
             {activeTab === 'Spells' && <Spells character={character} onChange={update} />}
             {activeTab === 'Notes' && <Notes character={character} onChange={update} />}
           </div>

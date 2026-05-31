@@ -117,6 +117,82 @@ export const spellSlots = (cls, level) => {
 
 export const signedBonus = (n) => (n >= 0 ? `+${n}` : `${n}`);
 
+export const getClassResources = (cls, level, abilities, subclass = '') => {
+  const cha = modifier(abilities?.cha || 10);
+  const c = (cls || '').toLowerCase();
+  const sub = (subclass || '').toLowerCase();
+  const lvl = level || 1;
+
+  switch (c) {
+    case 'barbarian': {
+      const rageMax = lvl >= 20 ? 999 : lvl >= 17 ? 6 : lvl >= 12 ? 5 : lvl >= 6 ? 4 : lvl >= 3 ? 3 : 2;
+      return [{ id: 'rage', label: 'Rages', max: rageMax, isCustom: false }];
+    }
+    case 'bard':
+      return [{ id: 'bardic_inspiration', label: 'Bardic Inspiration', max: Math.max(1, cha), isCustom: false }];
+    case 'cleric':
+      return [{ id: 'channel_divinity', label: 'Channel Divinity', max: lvl >= 18 ? 3 : lvl >= 6 ? 2 : 1, isCustom: false }];
+    case 'druid':
+      return [{ id: 'wild_shape', label: 'Wild Shape', max: 2, isCustom: false }];
+    case 'fighter': {
+      const resources = [
+        { id: 'second_wind', label: 'Second Wind', max: 1, isCustom: false },
+        { id: 'action_surge', label: 'Action Surge', max: lvl >= 17 ? 2 : 1, isCustom: false },
+      ];
+      if (lvl >= 3 && sub.includes('battle master')) {
+        const diceCount = lvl >= 15 ? 6 : lvl >= 7 ? 5 : 4;
+        resources.push({ id: 'superiority_dice', label: 'Superiority Dice', max: diceCount, isCustom: false });
+      }
+      if (lvl >= 11 && sub.includes('arcane archer')) {
+        resources.push({ id: 'arcane_shot', label: 'Arcane Shot', max: 2, isCustom: false });
+      }
+      return resources;
+    }
+    case 'monk':
+      return [{ id: 'ki', label: 'Ki Points', max: lvl, isCustom: false }];
+    case 'paladin': {
+      const resources = [
+        { id: 'lay_on_hands', label: 'Lay on Hands (HP)', max: lvl * 5, isCustom: false },
+        { id: 'divine_sense', label: 'Divine Sense', max: Math.max(1, 1 + cha), isCustom: false },
+      ];
+      if (lvl >= 3) resources.push({ id: 'channel_divinity', label: 'Channel Divinity', max: lvl >= 6 ? 2 : 1, isCustom: false });
+      return resources;
+    }
+    case 'sorcerer':
+      return lvl >= 2 ? [{ id: 'sorcery_points', label: 'Sorcery Points', max: lvl, isCustom: false }] : [];
+    case 'wizard':
+      return [{ id: 'arcane_recovery', label: 'Arcane Recovery', max: 1, isCustom: false }];
+    default:
+      return [];
+  }
+};
+
+export const getRaceResources = (race) => {
+  const r = (race || '').toLowerCase();
+  const out = [];
+  if (r.includes('dragonborn')) out.push({ id: 'breath_weapon', label: 'Breath Weapon', max: 1, isCustom: false });
+  if (r.includes('half-orc') || r.includes('half orc')) out.push({ id: 'relentless_endurance', label: 'Relentless Endurance', max: 1, isCustom: false });
+  if (r.includes('aasimar')) {
+    out.push({ id: 'healing_hands', label: 'Healing Hands', max: 1, isCustom: false });
+    out.push({ id: 'celestial_revelation', label: 'Celestial Revelation', max: 1, isCustom: false });
+  }
+  if (r.includes('tiefling')) out.push({ id: 'infernal_legacy', label: 'Infernal Legacy (spells)', max: 1, isCustom: false });
+  return out;
+};
+
+export const mergeResources = (existing, defaults) => {
+  const defaultIds = new Set(defaults.map(d => d.id));
+  const kept = existing.filter(r => r.isCustom || defaultIds.has(r.id));
+  const updated = kept.map(r => {
+    if (r.isCustom) return r;
+    const def = defaults.find(d => d.id === r.id);
+    return def ? { ...r, max: def.max, label: def.label, current: Math.min(r.current ?? r.max, def.max) } : r;
+  });
+  const existingIds = new Set(updated.map(r => r.id));
+  const added = defaults.filter(d => !existingIds.has(d.id)).map(d => ({ ...d, current: d.max }));
+  return [...updated, ...added];
+};
+
 export const CONDITIONS = [
   'Blinded', 'Charmed', 'Deafened', 'Exhaustion', 'Frightened',
   'Grappled', 'Incapacitated', 'Invisible', 'Paralyzed', 'Petrified',
