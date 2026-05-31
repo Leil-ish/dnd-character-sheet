@@ -1,4 +1,15 @@
+import { getStartingEquipment } from '../utils/startingEquipment';
+
 export default function Notes({ character, onChange }) {
+  const populateGear = () => {
+    const gear = getStartingEquipment(character.class, character.background);
+    if (!gear) return;
+    if (character.equipment && character.equipment.trim()) {
+      if (!confirm('This will replace your current equipment. Continue?')) return;
+    }
+    onChange({ equipment: gear });
+  };
+
   return (
     <div className="section notes-section">
       <h3>Character Details</h3>
@@ -31,7 +42,12 @@ export default function Notes({ character, onChange }) {
         placeholder="Class features, racial traits, feats..."
         onChange={(e) => onChange({ features: e.target.value })} />
 
-      <h3>Equipment</h3>
+      <div className="equipment-header">
+        <h3>Equipment</h3>
+        <button className="sync-btn" onClick={populateGear} title="Fill in standard starting gear for your class and background">
+          ↺ Suggest Starting Gear
+        </button>
+      </div>
       <div className="currency-row">
         {['cp','sp','ep','gp','pp'].map((coin) => (
           <div key={coin} className="currency-field">

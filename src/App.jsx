@@ -9,10 +9,11 @@ import Notes from './components/Notes';
 import { defaultCharacter } from './utils/defaultCharacter';
 import { signedBonus, getClassResources, getRaceResources, mergeResources } from './utils/calculations';
 import Resources from './components/Resources';
+import Actions from './components/Actions';
 import './App.css';
 
 const STORAGE_KEY = 'dnd-character-sheet';
-const TABS = ['Combat', 'Spells', 'Notes'];
+const TABS = ['Combat', 'Actions', 'Spells', 'Notes'];
 
 function loadCharacter() {
   try {
@@ -142,6 +143,7 @@ export default function App() {
                 <Attacks character={character} onChange={update} />
               </>
             )}
+            {activeTab === 'Actions' && <Actions character={character} />}
             {activeTab === 'Spells' && <Spells character={character} onChange={update} />}
             {activeTab === 'Notes' && <Notes character={character} onChange={update} />}
           </div>
