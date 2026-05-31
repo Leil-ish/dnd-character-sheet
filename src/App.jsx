@@ -7,7 +7,8 @@ import Attacks from './components/Attacks';
 import Spells from './components/Spells';
 import Notes from './components/Notes';
 import { defaultCharacter } from './utils/defaultCharacter';
-import { signedBonus } from './utils/calculations';
+import { signedBonus, getClassResources, getRaceResources, mergeResources } from './utils/calculations';
+import Resources from './components/Resources';
 import './App.css';
 
 const STORAGE_KEY = 'dnd-character-sheet';
@@ -16,7 +17,15 @@ const TABS = ['Combat', 'Spells', 'Notes'];
 function loadCharacter() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) return { ...defaultCharacter, ...JSON.parse(saved) };
+    if (saved) {
+      const data = { ...defaultCharacter, ...JSON.parse(saved) };
+      if (!data.resources || data.resources.length === 0) {
+        const classRes = getClassResources(data.class, data.level, data.abilities, data.subclass);
+        const raceRes = getRaceResources(data.race);
+        data.resources = [...classRes, ...raceRes].map((r) => ({ ...r, current: r.max }));
+      }
+      return data;
+    }
   } catch {}
   return { ...defaultCharacter };
 }
@@ -39,7 +48,15 @@ export default function App() {
     }, 800);
   }, [character]);
 
-  const update = (partial) => setCharacter((prev) => ({ ...prev, ...partial }));
+  const update = (partial) => setCharacter((prev) => {
+    const next = { ...prev, ...partial };
+    if ('class' in partial || 'level' in partial || 'race' in partial || 'subclass' in partial) {
+      const classRes = getClassResources(next.class, next.level, next.abilities, next.subclass);
+      const raceRes = getRaceResources(next.race);
+      next.resources = mergeResources(prev.resources || [], [...classRes, ...raceRes]);
+    }
+    return next;
+  });
 
   const exportJSON = () => {
     const blob = new Blob([JSON.stringify(character, null, 2)], { type: 'application/json' });
@@ -121,6 +138,7 @@ export default function App() {
             {activeTab === 'Combat' && (
               <>
                 <Combat character={character} onChange={update} />
+                <Resources character={character} onChange={update} />
                 <Attacks character={character} onChange={update} />
               </>
             )}
