@@ -7,6 +7,7 @@ import Attacks from './components/Attacks';
 import Spells from './components/Spells';
 import Notes from './components/Notes';
 import { defaultCharacter } from './utils/defaultCharacter';
+import { signedBonus } from './utils/calculations';
 import './App.css';
 
 const STORAGE_KEY = 'dnd-character-sheet';
@@ -24,7 +25,10 @@ export default function App() {
   const [character, setCharacter] = useState(loadCharacter);
   const [activeTab, setActiveTab] = useState('Combat');
   const [saveStatus, setSaveStatus] = useState('saved');
+  const [rollResult, setRollResult] = useState(null);
   const saveTimer = useRef(null);
+
+  const handleRoll = (result) => setRollResult(result);
 
   useEffect(() => {
     setSaveStatus('unsaved');
@@ -87,8 +91,20 @@ export default function App() {
       <div className="sheet-layout">
         <div className="left-col">
           <Header character={character} onChange={update} />
-          <AbilityScores character={character} onChange={update} />
-          <Skills character={character} onChange={update} />
+          <AbilityScores character={character} onChange={update} onRoll={handleRoll} />
+          <Skills character={character} onChange={update} onRoll={handleRoll} />
+          {rollResult && (
+            <div className={`section roll-result-panel${rollResult.crit ? ' crit' : rollResult.fail ? ' fail' : ''}`}>
+              <div className="roll-panel-label">{rollResult.label}</div>
+              <div className="roll-panel-main">
+                <span className="roll-panel-die">d20: {rollResult.roll}</span>
+                {rollResult.bonus !== 0 && <span className="roll-panel-bonus">{signedBonus(rollResult.bonus)}</span>}
+                <span className="roll-panel-total">{rollResult.total}</span>
+              </div>
+              {rollResult.crit && <span className="crit-label">NATURAL 20!</span>}
+              {rollResult.fail && <span className="fail-label">Natural 1</span>}
+            </div>
+          )}
         </div>
 
         <div className="right-col">

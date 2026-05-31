@@ -157,6 +157,7 @@ label { font-size: 0.75rem; color: var(--text-muted); display: block; margin-bot
 .prof-dot.filled { background: var(--accent); border-color: var(--accent); }
 
 /* ===== Skills ===== */
+.skills-section > h3 { margin-bottom: 8px; }
 .passive-perception { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; }
 .skills-list { display: flex; flex-direction: column; gap: 2px; }
 .skill-row {
@@ -288,6 +289,196 @@ label { font-size: 0.75rem; color: var(--text-muted); display: block; margin-bot
 .spell-row { display: flex; gap: 6px; align-items: center; margin-bottom: 3px; }
 .spell-row input { flex: 1; }
 .spell-notes { color: var(--text-muted); font-style: italic; }
+
+/* ===== Roll Result Panel (left column) ===== */
+.roll-result-panel {
+  border-color: var(--accent2);
+  text-align: center;
+}
+.roll-result-panel.crit {
+  border-color: var(--accent2);
+  background: rgba(200, 169, 81, 0.12);
+}
+.roll-result-panel.fail {
+  border-color: var(--text-muted);
+}
+.roll-panel-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+.roll-panel-main {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--mono);
+}
+.roll-panel-die {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.roll-panel-bonus {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.roll-panel-total {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: var(--accent2);
+  line-height: 1;
+}
+.roll-result-panel .crit-label,
+.roll-result-panel .fail-label {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.75rem;
+}
+
+/* ===== Rollable elements ===== */
+.rollable {
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.rollable:hover {
+  color: var(--accent);
+}
+.ability-modifier.rollable {
+  border-radius: 3px;
+}
+.ability-modifier.rollable:hover {
+  text-shadow: 0 0 8px var(--accent);
+}
+.save-label.rollable:hover {
+  color: var(--accent);
+}
+
+/* ===== Skills section header ===== */
+.skills-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.skills-header h3 {
+  margin-bottom: 0;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.custom-check-btn {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  background: transparent;
+  border-color: var(--accent2);
+  color: var(--accent2);
+}
+.custom-check-btn:hover {
+  background: var(--accent2);
+  border-color: var(--accent2);
+  color: var(--bg);
+}
+
+/* ===== Custom Check Modal ===== */
+.custom-check-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+.custom-check-modal {
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 20px;
+  width: 340px;
+  max-width: 90vw;
+}
+.custom-check-modal h4 {
+  color: var(--accent2);
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.custom-check-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+.custom-check-row {
+  margin-bottom: 14px;
+}
+.custom-check-row label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.custom-check-row select {
+  width: 100%;
+}
+.ability-buttons {
+  display: flex;
+  gap: 4px;
+}
+.ability-btn {
+  flex: 1;
+  padding: 4px 2px;
+  font-size: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: var(--bg);
+  border-color: var(--border);
+}
+.ability-btn:hover {
+  background: var(--surface2);
+  border-color: var(--accent);
+  color: var(--text);
+}
+.ability-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+.ability-btn-mod {
+  font-size: 0.75rem;
+  font-family: var(--mono);
+  font-weight: bold;
+}
+.custom-check-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  margin-bottom: 14px;
+}
+.custom-check-modifier-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.custom-check-modifier-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--accent2);
+  font-family: var(--mono);
+}
+.custom-check-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
 
 /* ===== Notes ===== */
 .notes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
