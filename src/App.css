@@ -305,6 +305,128 @@ label { font-size: 0.75rem; color: var(--text-muted); display: block; margin-bot
 .spell-row input { flex: 1; }
 .spell-notes { color: var(--text-muted); font-style: italic; }
 
+/* ===== Level field & Level Up button ===== */
+.level-row { display: flex; gap: 6px; align-items: center; }
+.level-row input { flex: 1; }
+.level-up-btn {
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  background: var(--accent2);
+  border-color: var(--accent2);
+  color: var(--bg);
+  font-weight: bold;
+  flex-shrink: 0;
+}
+.level-up-btn:hover { background: #e0b84a; border-color: #e0b84a; color: var(--bg); }
+
+/* ===== Level Up Modal ===== */
+.levelup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  padding: 16px;
+}
+.levelup-modal {
+  background: var(--surface);
+  border: 1px solid var(--accent2);
+  border-left: 4px solid var(--accent2);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 560px;
+  max-height: 88vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.levelup-title {
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--accent2);
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--border);
+  letter-spacing: 0.05em;
+}
+.levelup-block {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+}
+.levelup-block-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.levelup-hint { color: var(--text-muted); font-size: 0.8rem; }
+.levelup-features { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.levelup-features li { font-size: 0.85rem; padding-left: 12px; position: relative; }
+.levelup-features li::before { content: '•'; position: absolute; left: 0; color: var(--accent2); }
+.levelup-hp-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.levelup-hp-result { font-size: 0.85rem; background: var(--bg); border-radius: var(--radius); padding: 8px 12px; }
+.levelup-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+.levelup-tab {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  background: var(--bg);
+  border-color: var(--border);
+  color: var(--text-muted);
+}
+.levelup-tab.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+/* ASI panel */
+.asi-panel { display: flex; flex-direction: column; gap: 10px; }
+.asi-mode-row { display: flex; gap: 6px; }
+.asi-mode-row button { flex: 1; font-size: 0.8rem; padding: 5px; background: var(--bg); border-color: var(--border); color: var(--text-muted); }
+.asi-mode-row button.active { background: var(--surface2); color: var(--text); border-color: var(--accent2); }
+.asi-ability-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.asi-ability-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 2px;
+  background: var(--bg);
+  border-color: var(--border);
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+.asi-ability-btn.selected { background: var(--accent); border-color: var(--accent); color: white; }
+.asi-ability-btn.capped { opacity: 0.4; cursor: default; }
+.asi-ab-label { font-weight: bold; font-size: 0.72rem; }
+.asi-ab-val { font-size: 0.65rem; font-family: var(--mono); color: var(--text-muted); }
+.asi-ability-btn.selected .asi-ab-val { color: rgba(255,255,255,0.8); }
+
+/* Feat panel */
+.feat-panel { display: flex; flex-direction: column; gap: 8px; }
+.feat-search-input { width: 100%; }
+.feats-scroll { max-height: 240px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; border: 1px solid var(--border); border-radius: var(--radius); padding: 6px; background: var(--bg); }
+.feat-row { padding: 8px 10px; border-radius: 4px; cursor: pointer; border: 1px solid transparent; transition: border-color 0.12s; }
+.feat-row:hover { border-color: var(--border); background: var(--surface); }
+.feat-row.selected { border-color: var(--accent2); background: rgba(200,169,81,0.1); }
+.feat-row.taken { opacity: 0.45; cursor: default; }
+.feat-row-name { font-size: 0.85rem; font-weight: bold; color: var(--accent2); display: flex; gap: 6px; align-items: center; margin-bottom: 2px; flex-wrap: wrap; }
+.feat-asi-tag { font-size: 0.65rem; background: var(--accent); color: white; border-radius: 3px; padding: 1px 5px; font-weight: normal; }
+.feat-taken-tag { font-size: 0.65rem; color: var(--text-muted); font-weight: normal; font-style: italic; }
+.feat-prereq { font-size: 0.7rem; color: var(--yellow); margin-bottom: 2px; }
+.feat-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
+.feat-ability-pick { background: var(--bg); border-radius: var(--radius); padding: 10px 12px; border: 1px solid var(--accent2); }
+.feat-ability-btns { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+.feat-ab-btn { font-size: 0.78rem; padding: 4px 10px; background: var(--surface); border-color: var(--border); }
+.feat-ab-btn.selected { background: var(--accent); border-color: var(--accent); color: white; }
+
+/* Footer */
+.levelup-footer { display: flex; gap: 10px; padding: 14px 18px; justify-content: flex-end; border-top: 1px solid var(--border); }
+.levelup-confirm-btn { background: var(--accent2); border-color: var(--accent2); color: var(--bg); font-weight: bold; padding: 8px 20px; }
+.levelup-confirm-btn:hover:not(:disabled) { background: #e0b84a; border-color: #e0b84a; color: var(--bg); }
+.levelup-confirm-btn:disabled { opacity: 0.4; cursor: default; }
+.levelup-cancel-btn { background: transparent; border-color: var(--border); color: var(--text-muted); }
+
 /* ===== Roll Result Panel (left column) ===== */
 .roll-result-panel {
   border-color: var(--accent2);
